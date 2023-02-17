@@ -3,10 +3,12 @@ import mysql from 'mysql'
 export class UserModel {
     jb = 0;
     tg = 0;
+    object = "";
     connection;
-    constructor(jb, tg) {
+    constructor(jb, tg, object) {
         this.jb = jb;
         this.tg = tg;
+        this.object = object;
         this.connection = mysql.createConnection({
             port: process.env.DB_PORT,
             user: process.env.DB_USER,
@@ -20,7 +22,7 @@ export class UserModel {
 
     async get(month) {
        const result = await (new Promise((resolve, reject) => {
-           this.connection.query('select * from `users` where `month` = '+month+' and `jb` = ' + this.jb + ' and `tg` = ' + this.tg, (err, res) => {
+           this.connection.query('select * from `users` where `month` = '+month+' and `jb` = ' + this.jb + ' and `tg` = ' + this.tg + ' and `object` = \'' + this.object + '\'', (err, res) => {
                 if (err)
                     reject(err);
                 resolve(res);
@@ -33,7 +35,7 @@ export class UserModel {
     async save(data) {
         await Promise.all(data.map(async el => {
             const checkExists = await (new Promise((resolve, reject) => {
-                this.connection.query('select * from `users` where `month` = '+ el.month +' and `jb` = ' + this.jb + ' and `tg` = ' + this.tg, (err, res) => {
+                this.connection.query('select * from `users` where `month` = '+ el.month +' and `jb` = ' + this.jb + ' and `tg` = ' + this.tg + ' and `object` = \'' + this.object + '\'', (err, res) => {
                     if (err)
                         reject(err);
                     resolve(res);
@@ -41,12 +43,12 @@ export class UserModel {
             }));
             if (checkExists.length) {
                 this.connection.query(`
-                    update \`users\` set \`days\` = '${JSON.stringify(el.days)}' where \`month\` = ${el.month} and \`jb\` = ${this.jb} and \`tg\` = ${this.tg}
+                    update \`users\` set \`days\` = '${JSON.stringify(el.days)}' where \`month\` = ${el.month} and \`jb\` = ${this.jb} and \`tg\` = ${this.tg} and \`object\` = ${this.object}
                 `)
             } else {
                 const result = await (new Promise((resolve, reject) => {
                     this.connection.query(
-                        'insert into `users` (`jb`, `tg`, `days`, `month`) values ('+this.jb+', '+this.tg+', \''+JSON.stringify(el.days)+'\', '+el.month+')', (err, res) => {
+                        'insert into `users` (`jb`, `tg`, `object`, `days`, `month`) values ('+this.jb+', '+this.tg+', \''+this.object+'\', \''+JSON.stringify(el.days)+'\', '+el.month+')', (err, res) => {
                             if (err)
                                 reject(err);
                             resolve(res);
