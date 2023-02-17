@@ -27,7 +27,11 @@ export class UserModel {
                     reject(err);
                 resolve(res);
            });
-       }));
+       })).catch(err => {
+           this.connection.end();
+       });
+
+       this.connection.end();
 
        return result;
     }
@@ -55,6 +59,10 @@ export class UserModel {
                         });
                 }));
             }
-        }));
+        })).catch(err => {
+            this.connection.end();
+        });;
+
+        this.connection.end();
     }
 }
