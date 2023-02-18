@@ -49,7 +49,7 @@ export class UserModel {
             }));
             if (checkExists.length) {
                 this.connection.query(`
-                    update \`users\` set \`days\` = '${JSON.stringify(el.days)}' where \`month\` = ${el.month} and \`jb\` = ${this.jb} and \`tg\` = ${this.tg} and \`object\` = ${this.object}
+                    update \`users\` set \`days\` = '${JSON.stringify(el.days)}' where \`month\` = \'${el.month}\' and \`jb\` = ${this.jb} and \`tg\` = ${this.tg} and \`object\` = \'${this.object}\'
                 `)
             } else {
                 const result = await (new Promise((resolve, reject) => {
