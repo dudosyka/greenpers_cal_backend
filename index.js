@@ -11,13 +11,13 @@ app.use(cors());
 app.use(bodyParser.urlencoded({extended: false, limit: '50mb', parameterLimit: 1000000}));
 app.use(bodyParser.json());
 
-app.get("/get/:month/:jb/:tg/:object", async (req, res) => {
-    const user = new UserModel(parseInt(req.params.jb), parseInt(req.params.tg), req.params.object);
+app.get("/get/:month/:jb/:tg/:object/:phone", async (req, res) => {
+    const user = new UserModel(parseInt(req.params.jb), parseInt(req.params.tg), req.params.object, req.params.phone);
     res.send(JSON.stringify(await user.get(parseInt(req.params.month))));
 });
 
-app.post('/save/:jb/:tg/:object', async (req, res) => {
-    const user = new UserModel(parseInt(req.params.jb), parseInt(req.params.tg), req.params.object);
+app.post('/save/:jb/:tg/:object/:phone', async (req, res) => {
+    const user = new UserModel(parseInt(req.params.jb), parseInt(req.params.tg), req.params.object, req.params.phone);
     await user.save(JSON.parse(req.body.data));
     res.send(true);
 })

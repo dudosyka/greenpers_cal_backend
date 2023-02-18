@@ -4,11 +4,13 @@ export class UserModel {
     jb = 0;
     tg = 0;
     object = "";
+    phone = "";
     connection;
-    constructor(jb, tg, object) {
+    constructor(jb, tg, object, phone) {
         this.jb = jb;
         this.tg = tg;
         this.object = object;
+        this.phone = phone;
         this.connection = mysql.createConnection({
             port: process.env.DB_PORT,
             user: process.env.DB_USER,
@@ -52,7 +54,7 @@ export class UserModel {
             } else {
                 const result = await (new Promise((resolve, reject) => {
                     this.connection.query(
-                        'insert into `users` (`jb`, `tg`, `object`, `days`, `month`) values ('+this.jb+', '+this.tg+', \''+this.object+'\', \''+JSON.stringify(el.days)+'\', '+el.month+')', (err, res) => {
+                        'insert into `users` (`jb`, `tg`, `object`, `phone`, `days`, `month`) values ('+this.jb+', '+this.tg+', \''+this.object+'\', \''+this.phone+'\', \''+JSON.stringify(el.days)+'\', '+el.month+')', (err, res) => {
                             if (err)
                                 reject(err);
                             resolve(res);
