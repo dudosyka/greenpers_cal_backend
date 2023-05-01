@@ -1,4 +1,3 @@
-// const mysql = require('mysql');
 import mysql from 'mysql'
 export class UserModel {
     jb = 0;
@@ -6,6 +5,17 @@ export class UserModel {
     object = "";
     phone = "";
     connection;
+    connectionClosed = false;
+    closeConnection(err = null) {
+      if (this.connectionClosed)
+        return;
+      
+      if (err)
+        console.error(err);
+      
+      this.connection.end();
+    }
+    
     constructor(jb, tg, object, phone) {
         this.jb = jb;
         this.tg = tg;
@@ -30,10 +40,10 @@ export class UserModel {
                 resolve(res);
            });
        })).catch(err => {
-           this.connection.end();
+         this.closeConnection(err);
        });
-
-       this.connection.end();
+      
+      this.closeConnection();
 
        return result;
     }
@@ -52,19 +62,19 @@ export class UserModel {
                     update \`users\` set \`days\` = '${JSON.stringify(el.days)}' where \`month\` = \'${el.month}\' and \`jb\` = ${this.jb} and \`tg\` = ${this.tg} and \`object\` = \'${this.object}\'
                 `)
             } else {
-                const result = await (new Promise((resolve, reject) => {
-                    this.connection.query(
-                        'insert into `users` (`jb`, `tg`, `object`, `phone`, `days`, `month`) values ('+this.jb+', '+this.tg+', \''+this.object+'\', \''+this.phone+'\', \''+JSON.stringify(el.days)+'\', '+el.month+')', (err, res) => {
-                            if (err)
-                                reject(err);
-                            resolve(res);
-                        });
-                }));
+              await (new Promise((resolve, reject) => {
+                this.connection.query(
+                  'insert into `users` (`jb`, `tg`, `object`, `phone`, `days`, `month`) values ('+this.jb+', '+this.tg+', \''+this.object+'\', \''+this.phone+'\', \''+JSON.stringify(el.days)+'\', '+el.month+')', (err, res) => {
+                    if (err)
+                      reject(err);
+                    resolve(res);
+                  });
+              }));
             }
         })).catch(err => {
-            this.connection.end();
-        });;
+          this.closeConnection(err);
+        });
 
-        this.connection.end();
+        this.closeConnection();
     }
 }
